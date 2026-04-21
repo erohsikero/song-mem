@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Song {
+  id           String         @id @default(uuid())
+  originalName String
+  storedPath   String
+  checksum     String         @unique
+  durationSec  Float
+  mimeType     String
+  sizeBytes    Int
+  createdAt    DateTime       @default(now())
+  moments      MemoryMoment[]
+}
+
+model MemoryMoment {
+  id           String   @id @default(uuid())
+  songId       String
+  timestampSec Float
+  prompt       String
+  imagePath    String
+  createdAt    DateTime @default(now())
+  song         Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@index([songId])
+}
